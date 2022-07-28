@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace=绑定一个对应的Dao或Mapper接口-->
+<mapper namespace="com.zhang.rep.mapper.WarehouseMapper">
+    <resultMap id="WarehouseEntityMap" type="com.zhang.rep.entity.Warehouse">
+        <result column="kid" property="kid"/>
+        <result column="goods_id" property="goodsId"/>
+        <result column="goods_name" property="goodsName"/>
+        <result column="quantity" property="quantity"/>
+        <result column="max_quantity" property="maxQuantity"/>
+        <result column="company" property="company"/>
+        <result column="products_or_materials" property="productsOrMaterials"/>
+        <result column="if_delete" property="ifDelete"/>
+        <result column="remarks" property="remarks"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="kid">
+        INSERT INTO erp.t_warehouse(goods_id, goods_name, quantity, max_quantity, company,products_or_materials, if_delete, remarks)
+        VALUES (#{goodsId}, #{goodsName}, #{quantity}, #{maxQuantity}, #{company},#{productsOrMaterials}, #{ifDelete}, #{remarks})
+    </insert>
+
+    <select id="select" resultMap="WarehouseEntityMap">
+        SELECT * FROM erp.t_warehouse
+        <where>
+            <if test="kid != null">
+                AND kid=#{kid}
+            </if>
+            <if test="goodsId != null">
+                AND goods_id=#{goodsId}
+            </if>
+            <if test="goodsName != null">
+            </if>
+            <if test="productsOrMaterials != null">
+                AND products_or_materials=#{productsOrMaterials}
+            </if>
+        </where>
+        limit #{pageNo},8
+    </select>
+
+    <update id="update">
+        UPDATE erp.t_warehouse
+        <trim prefix="set" suffixOverrides=",">
+            <if test="goodsName != null">
+                goods_name=#{goodsName},
+            </if>
+            <if test="quantity != null">
+                quantity=#{quantity},
+            </if>
+            <if test="maxQuantity != null">
+                max_quantity=#{maxQuantity},
+            </if>
+            <if test="company != null">
+                company=#{company},
+            </if>
+            <if test="ifDelete != null">
+                if_delete=#{ifDelete},
+            </if>
+            <if test="remarks != null">
+                remarks=#{remarks}
+            </if>
+        </trim>
+        WHERE goods_id=#{goodsId}
+    </update>
+
+    <delete id="delete">
+        DELETE
+        FROM erp.t_warehouse
+        WHERE kid = #{kid}
+    </delete>
+</mapper>

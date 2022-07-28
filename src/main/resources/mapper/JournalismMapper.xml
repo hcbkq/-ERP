@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace=绑定一个对应的Dao或Mapper接口-->
+<mapper namespace="com.zhang.rep.mapper.JournalismMapper">
+    <resultMap id="JournalismEntityMap" type="com.zhang.rep.entity.Journalism">
+        <result column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+    </resultMap>
+    <select id="getByJournalism" resultMap="JournalismEntityMap">
+        SELECT * FROM erp.t_journalism;
+    </select>
+</mapper>

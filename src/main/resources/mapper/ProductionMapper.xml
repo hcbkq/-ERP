@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhang.rep.mapper.ProductionMapper">
+    <resultMap id="ProductionEntityMap" type="com.zhang.rep.entity.Production">
+        <result column="pid" property="pid"/>
+        <result column="production_id" property="productionId"/>
+        <result column="order_date" property="orderDate"/>
+        <result column="expected" property="expected"/>
+        <result column="product_id" property="productId"/>
+        <result column="product_name" property="productName"/>
+        <result column="document_number" property="documentNumber"/>
+        <result column="quantity" property="quantity"/>
+        <result column="preparer" property="preparer"/>
+        <result column="remarks" property="remarks"/>
+        <result column="complete" property="complete"/>
+        <result column="examine" property="examine"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="modified_user" property="modifiedUser"/>
+        <result column="modified_time" property="modifiedTime"/>
+    </resultMap>
+
+    <insert id="insert" keyProperty="pid" useGeneratedKeys="true">
+        INSERT INTO erp.t_production(production_id, order_date, expected, product_id, product_name, document_number,
+                                     quantity, preparer, remarks, complete, examine,
+                                     created_user, created_time,
+                                     modified_user, modified_time)
+            VALUES (
+                    #{productionId},#{orderDate},#{expected},#{productId},#{productName},#{documentNumber},
+                    #{quantity},#{preparer},#{remarks},#{complete},#{examine},
+                    #{createdUser},#{createdTime},
+                    #{modifiedUser},#{modifiedTime}
+                   )
+    </insert>
+
+    <select id="calProductionCount" resultType="java.lang.Integer">
+        SELECT count(`pid`) FROM erp.t_production
+    </select>
+
+    <select id="select" resultMap="ProductionEntityMap">
+        SELECT * FROM erp.t_production
+        <where>
+            <if test="productionId != null and productionId != ''">
+                AND production_id like concat(#{productionId},'%')
+            </if>
+            <if test="startOrderDate != null and startOrderDate != ''">
+                <![CDATA[  and DATE_FORMAT(order_date, '%Y-%m-%d')>=  DATE_FORMAT(#{startOrderDate}, '%Y-%m-%d')   ]]>
+            </if>
+            <if test="endOrderDate != null and endOrderDate != ''">
+                <![CDATA[  and DATE_FORMAT(order_date, '%Y-%m-%d') <= DATE_FORMAT(#{endOrderDate}, '%Y-%m-%d')    ]]>
+            </if>
+              <if test="startDeliveryDate != null and startDeliveryDate != ''">
+                <![CDATA[   and DATE_FORMAT(order_date, '%Y-%m-%d')>=  DATE_FORMAT(#{startDeliveryDate}, '%Y-%m-%d')   ]]>
+            </if>
+            <if test="endDeliveryDate != null and endDeliveryDate != ''">
+                <![CDATA[  and DATE_FORMAT(order_date, '%Y-%m-%d') <= DATE_FORMAT(#{endDeliveryDate}, '%Y-%m-%d')    ]]>
+            </if>
+            <if test="productId != null and productId != ''">
+                AND product_id like concat(#{productId},'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                AND product_name  like concat(#{productName},'%')
+            </if>
+           <if test="documentNumber != null and documentNumber != ''">
+                AND document_number like concat(#{documentNumber},'%')
+            </if>
+            <if test="preparer != null and preparer != ''">
+                AND preparer like concat('%',#{preparer},'%')
+            </if>
+            <if test="complete != null">
+                AND complete=#{complete}
+            </if>
+            <if test="examine != null">
+                AND examine=#{examine}
+            </if>
+        </where>
+        limit #{pageNo},8
+    </select>
+
+    <update id="update">
+        UPDATE erp.t_production
+        <trim prefix="set" suffixOverrides=",">
+            <if test="expected != null">
+                expected=#{expected},
+            </if>
+            <if test="documentNumber == null and productId != null and productName != null">
+                product_id=#{productId},
+                product_name=#{productName},
+            </if>
+            <if test="quantity != null">
+                quantity=#{quantity},
+            </if>
+            <if test="preparer != null">
+                preparer=#{preparer},
+            </if>
+            <if test="remarks != null">
+                remarks=#{remarks},
+            </if>
+            <if test="complete != null">
+                complete=#{complete},
+            </if>
+            <if test="examine != null">
+                examine=#{examine}
+            </if>
+        </trim>
+        WHERE production_id=#{productionId}
+    </update>
+
+    <delete id="delete">
+        DELETE erp.t_production WHERE
+        <foreach collection="list" item="productId" separator="or">
+            production_id=#{productionId}
+        </foreach>
+    </delete>
+</mapper>

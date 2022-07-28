@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace=绑定一个对应的Dao或Mapper接口-->
+<mapper namespace="com.zhang.rep.mapper.CustomerMapper">
+    <resultMap id="CustomerEntityMap" type="com.zhang.rep.entity.Customer">
+        <result column="id" property="id"/>
+        <result column="cid" property="cid"/>
+        <result column="username" property="username"/>
+        <result column="province_name" property="provinceName"/>
+        <result column="province_code" property="provinceCode"/>
+        <result column="city_name" property="cityName"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="area_name" property="areaName"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="zip" property="zip"/>
+        <result column="address" property="address"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="gender" property="gender"/>
+        <result column="avatar" property="avatar"/>
+        <result column="handler" property="handler"/>
+        <result column="associated" property="associated"/>
+        <result column="document_type" property="documentType"/>
+        <result column="identification" property="identification"/>
+        <result column="age" property="age"/>
+        <result column="order" property="order"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="modified_user" property="modifiedUser"/>
+        <result column="modified_time" property="modifiedTime"/>
+    </resultMap>
+    <select id="getByCustomer" resultMap="CustomerEntityMap">
+        SELECT * FROM erp.t_customer;
+    </select>
+    
+    <select id="calCustomerCount" resultType="java.lang.Integer">
+        SELECT COUNT(`id`) FROM erp.t_customer
+    </select>
+    <select id="findCustomerList" resultMap="CustomerEntityMap">
+        SELECT * FROM erp.t_customer WHERE id order by id limit #{pageNo},8
+    </select>
+    
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO erp.t_customer(
+             cid,username,province_name,province_code,city_name,city_code
+             ,area_name,area_code,zip,address,phone,email,gender,avatar,handler
+             ,associated,document_type,identification,age,`order`
+             ,created_user,created_time,modified_user,modified_time
+        ) VALUE (
+            #{cid},#{username},#{provinceName},#{provinceCode},#{cityName},#{cityCode}
+            ,#{areaName},#{areaCode},#{zip},#{address},#{phone},#{email},#{gender},#{avatar},#{handler}
+            ,#{associated},#{documentType},#{identification},#{age},#{order}
+            ,#{createdUser},#{createdTime},#{modifiedUser},#{modifiedTime}
+        )
+    </insert>
+
+    <select id="findByCustomer" resultMap="CustomerEntityMap">
+        SELECT * FROM erp.t_customer WHERE cid=#{cid}
+    </select>
+
+    <select id="findByCustomers" resultMap="CustomerEntityMap">
+        SELECT * FROM erp.t_customer
+        <where>
+            <if test="id != null">
+                AND id=#{id}
+            </if>
+            <if test="cid != null and cid != ''">
+                AND cid=#{cid}
+            </if>
+            <if test="username != null and username != ''">
+                AND username like concat('%',#{username},'%')
+            </if>
+            <if test="provinceName != null and provinceName != ''">
+                AND province_name=#{provinceName}
+            </if>
+            <if test="provinceCode != null and provinceCode != '' ">
+                AND province_code=#{provinceCode}
+            </if>
+            <if test="cityName != null and cityName  != ''">
+                AND city_name=#{cityName}
+            </if>
+            <if test="cityCode != null and cityCode != '' ">
+                AND city_code=#{cityCode}
+            </if>
+            <if test="areaName != null and areaName != ''">
+                AND area_name=#{areaName}
+            </if>
+            <if test="areaCode != null and areaCode != ''">
+                AND area_code=#{areaCode}
+            </if>
+            <if test="order != null">
+                AND `order`= #{order}
+            </if>
+            <if test="createdUser != null and createdUser != ''">
+                AND created_user=#{createdUser}
+            </if>
+            <if test="modifiedUser != null and modifiedUser != ''">
+                AND modified_user=#{modifiedUser}
+            </if>
+        </where>
+        limit #{page},8
+    </select>
+
+    <select id="countByTotal" resultType="java.lang.Integer">
+        SELECT count(*) FROM erp.t_customer
+    </select>
+
+    <update id="updateCustomer">
+        UPDATE erp.t_customer
+        <trim prefix="set" suffixOverrides=",">
+            <if test="username != null">
+                username=#{username},
+             </if>
+            <if test="provinceName != null">province_name=#{provinceName},</if>
+            <if test="provinceCode != null">province_code=#{provinceCode},</if>
+            <if test="cityName != null">city_name=#{cityName},</if>
+            <if test="cityCode != null">city_code=#{cityCode},</if>
+            <if test="areaName !=null">area_name=#{areaName},</if>
+            <if test="areaCode !=null">area_code=#{areaCode},</if>
+            <if test="zip != null">zip=#{zip},</if>
+            <if test="address != null">address=#{address},</if>
+            <if test="phone != null">phone=#{phone},</if>
+            <if test="email != null">email=#{email},</if>
+            <if test="gender != null">gender=#{gender},</if>
+            <if test="avatar != null">avatar=#{avatar},</if>
+            <if test="documentType != null">document_type=#{documentType},</if>
+            <if test="associated != null">associated=#{associated},</if>
+            <if test="age != null">age=#{age},</if>
+            <if test="modifiedUser != null">modified_user=#{modifiedUser},</if>
+            <if test="modifiedTime != null">modified_time=#{modifiedTime}</if>
+        </trim>
+        WHERE cid=#{cid}
+    </update>
+
+    <update id="updateIFOrderByCid">
+        UPDATE erp.t_customer SET
+        `order`=#{order}
+        WHERE cid=#{cid}
+    </update>
+
+    <update id="updateCustomerAvatar">
+        UPDATE erp.t_customer SET
+             avatar=#{avatar}
+            ,modified_user=#{modifiedUser}
+            ,modified_time=#{modifiedTime}
+        WHERE cid=#{cid}
+    </update>
+
+    <delete id="deleteCustomer">
+        DELETE FROM erp.t_customer where cid=#{cid}
+    </delete>
+</mapper>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace=绑定一个对应的Dao或Mapper接口-->
+<mapper namespace="com.zhang.rep.mapper.IncomeAndExpenditureMapper">
+    <resultMap id="IncomeAndExpenditureEntityMap" type="com.zhang.rep.entity.IncomeAndExpenditure">
+        <result column="iid" property="iid"/>
+        <result column="voucher" property="voucher"/>
+        <result column="occurrence" property="occurrence"/>
+        <result column="opposite_unit" property="oppositeUnit"/>
+        <result column="account" property="account"/>
+        <result column="income_or_expenditure" property="incomeOrExpenditure"/>
+        <result column="classification" property="classification"/>
+        <result column="amount" property="amount"/>
+        <result column="reviewer" property="reviewer"/>
+        <result column="remarks" property="remarks"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+    </resultMap>
+
+    <insert id="insert" keyProperty="iid" useGeneratedKeys="true">
+        INSERT INTO erp.t_income_and_expenditure(voucher, occurrence, opposite_unit, account,
+                                                 income_or_expenditure, classification, amount,
+                                                 reviewer, remarks, created_user, created_time)
+                                                  VALUE(#{voucher},#{occurrence},#{oppositeUnit},#{account}
+                                                       ,#{incomeOrExpenditure},#{classification},#{amount}
+                                                       ,#{reviewer},#{remarks},#{createdUser},#{createdTime})
+    </insert>
+
+    <select id="select" resultMap="IncomeAndExpenditureEntityMap">
+        SELECT * FROM erp.t_income_and_expenditure
+        <where>
+            <if test="voucher != null and voucher != ''">
+                AND voucher like concat('%',#{voucher},'%')
+            </if>
+            <if test="oppositeUnit != null and oppositeUnit != ''">
+                AND opposite_unit like concat('%',#{oppositeUnit})
+            </if>
+            <if test="incomeOrExpenditure != null">
+                AND income_or_expenditure=#{incomeOrExpenditure}
+            </if>
+            <if test="classification != null">
+                AND classification=#{classification}
+            </if>
+            <if test="reviewer != null">
+                AND reviewer=#{reviewer}
+            </if>
+            <if test="remarks != null and remarks != ''">
+                AND remarks like concat('%',#{remarks},'%')
+            </if>
+        </where>
+        limit #{pageNo},8
+    </select>
+
+    <update id="update">
+        UPDATE erp.t_income_and_expenditure
+        <trim prefix="set" suffixOverrides=",">
+            <if test="reviewer != null">
+                reviewer=#{reviewer},
+            </if>
+            <if test="remarks != null">
+                remarks=#{remarks}
+            </if>
+            WHERE voucher=#{voucher}
+        </trim>
+    </update>
+
+    <delete id="delete">
+       DELETE FROM erp.t_income_and_expenditure WHERE
+       <foreach collection="list" item="voucher" separator="or">
+           voucher=#{voucher}
+       </foreach>
+    </delete>
+
+    <select id="RevenueAndExpenditure" resultType="java.math.BigDecimal">
+        SELECT sum(amount) FROM erp.t_income_and_expenditure
+        where
+              DATE_FORMAT(`occurrence`,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m')
+          AND income_or_expenditure=#{incomeOrExpenditure}
+    </select>
+
+    <select id="monthRevenueAndExpenditure" resultType="map">
+        SELECT sum(amount)AS DATETIME FROM erp.t_income_and_expenditure
+        where
+                t_income_and_expenditure.occurrence>DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+          AND income_or_expenditure =#{incomeOrExpenditure} GROUP BY MONTH(occurrence)
+    </select>
+</mapper>

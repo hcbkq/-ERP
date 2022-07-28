@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace=绑定一个对应的Dao或Mapper接口-->
+<mapper namespace="com.zhang.rep.mapper.ProvincialAndUrbanStreetsMapper">
+    <resultMap id="ProvinceEntityMap" type="com.zhang.rep.entity.Province">
+        <result column="PROVINCE_CODE" property="provinceCode"/>
+        <result column="PROVINCE_NAME" property="provinceName"/>
+        <result column="SHORT_NAME" property="shortName"/>
+        <result column="LNG" property="lng"/>
+        <result column="LAT" property="lat"/>
+        <result column="SORT" property="sort"/>
+        <result column="GMT_CREATE" property="gmtCreate"/>
+        <result column="GMT_MODIFIED" property="gmtModified"/>
+        <result column="MEMO" property="memo"/>
+        <result column="DATA_STATE" property="dataState"/>
+        <result column="TENANT_CODE" property="tenantCode"/>
+    </resultMap>
+    <resultMap id="CityEntityMap" type="com.zhang.rep.entity.City">
+        <result column="CITY_CODE" property="cityCode"/>
+        <result column="CITY_NAME" property="cityName"/>
+        <result column="SHORT_NAME" property="shortName"/>
+        <result column="PROVINCE_CODE" property="provinceCode"/>
+        <result column="LNG" property="lng"/>
+        <result column="LAT" property="lat"/>
+        <result column="SORT" property="sort"/>
+        <result column="GMT_CREATE" property="gmtCreate"/>
+        <result column="GMT_MODIFIED" property="gmtModified"/>
+        <result column="MEMO" property="memo"/>
+        <result column="DATA_STATE" property="dataState"/>
+        <result column="TENANT_CODE" property="tenantCode"/>
+    </resultMap>
+    <resultMap id="AreaEntityMap" type="com.zhang.rep.entity.Area">
+        <result column="AREA_CODE" property="areaCode"/>
+        <result column="CITY_CODE" property="cityCode"/>
+        <result column="AREA_NAME" property="areaName"/>
+        <result column="SHORT_NAME" property="shortName"/>
+        <result column="LNG" property="lng"/>
+        <result column="LAT" property="lat"/>
+        <result column="SORT" property="sort"/>
+        <result column="GMT_CREATE" property="gmtCreate"/>
+        <result column="GMT_MODIFIED" property="gmtModified"/>
+        <result column="MEMO" property="memo"/>
+        <result column="DATA_STATE" property="dataState"/>
+        <result column="TENANT_CODE" property="tenantCode"/>
+    </resultMap>
+    <resultMap id="StreetEntityMap" type="com.zhang.rep.entity.Street">
+        <result column="STREET_CODE" property="streetCode"/>
+        <result column="AREA_CODE" property="areaCode"/>
+        <result column="STREET_NAME" property="streetName"/>
+        <result column="SHORT_NAME" property="shortName"/>
+        <result column="LNG" property="lng"/>
+        <result column="LAT" property="lat"/>
+        <result column="SORT" property="sort"/>
+        <result column="GMT_CREATE" property="gmtCreate"/>
+        <result column="GMT_MODIFIED" property="gmtModified"/>
+        <result column="MEMO" property="memo"/>
+        <result column="DATA_STATE" property="dataState"/>
+        <result column="TENANT_CODE" property="tenant"/>
+    </resultMap>
+
+    <select id="findByProvince" resultMap="ProvinceEntityMap">
+        SELECT * FROM erp.bs_province
+    </select>
+
+    <select id="findByCity" resultMap="CityEntityMap">
+        SELECT * FROM erp.bs_city where PROVINCE_CODE=#{provinceCode}
+    </select>
+
+    <select id="findByArea" resultMap="AreaEntityMap">
+        SELECT * FROM erp.bs_area WHERE CITY_CODE=#{cityCoDe}
+    </select>
+
+    <select id="findByStreet" resultMap="StreetEntityMap">
+        SELECT * FROM erp.bs_street WHERE AREA_CODE=#{areaCode}
+    </select>
+
+    <select id="findByProvinceCode" resultMap="ProvinceEntityMap" resultType="java.lang.String">
+        SELECT `PROVINCE_NAME` FROM erp.bs_province WHERE PROVINCE_CODE=#{provinceCode}
+    </select>
+    <select id="findByCityCode" resultMap="CityEntityMap" resultType="java.lang.String">
+        SELECT `CITY_NAME` FROM erp.bs_city  WHERE CITY_CODE=#{cityCode}
+    </select>
+    <select id="findByAreaCode" resultMap="AreaEntityMap" resultType="java.lang.String">
+        SELECT `AREA_NAME` FROM erp.bs_area WHERE  AREA_CODE=#{areaCode}
+    </select>
+    <select id="findByStreetCode" resultMap="StreetEntityMap" resultType="java.lang.String">
+        SELECT `SHORT_NAME` FROM erp.bs_street WHERE STREET_CODE=#{streetCode}
+    </select>
+</mapper>

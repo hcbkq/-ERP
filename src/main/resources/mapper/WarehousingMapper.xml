@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace=绑定一个对应的Dao或Mapper接口-->
+<mapper namespace="com.zhang.rep.mapper.WarehousingMapper">
+    <resultMap id="WarehousingEntityMap" type="com.zhang.rep.entity.Warehousing">
+        <result column="wid" property="wid"/>
+        <result column="document_number" property="documentNumber"/>
+        <result column="document_type" property="documentType"/>
+        <result column="unique_identifier" property="uniqueIdentifier"/>
+        <result column="product_name" property="productName"/>
+        <result column="specification" property="specification"/>
+        <result column="product_type" property="productType"/>
+        <result column="company" property="company"/>
+        <result column="quantity" property="quantity"/>
+        <result column="In_and_out" property="InAndOut"/>
+        <result column="remarks" property="remarks"/>
+        <result column="implement" property="implement"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="wid">
+        INSERT INTO erp.t_warehousing(document_number, document_type, unique_identifier,
+                                      product_name, specification, product_type, company, quantity,
+                                      In_and_out, implement, remarks, created_user, created_time) VALUES (
+                                      #{documentNumber},#{documentType},#{uniqueIdentifier}
+                                      ,#{productName},#{specification},#{productType},#{company},#{quantity}
+                                      ,#{InAndOut},#{implement},#{remarks},#{createdUser},#{createdTime}
+                                            )
+
+    </insert>
+    
+    <select id="calWarehousingCount" resultType="java.lang.Integer">
+        SELECT COUNT(`wid`) FROM erp.t_warehousing
+    </select>
+
+    <select id="select" resultMap="WarehousingEntityMap">
+        SELECT * FROM erp.t_warehousing
+        <where>
+            <if test="documentNumber != null and documentNumber != ''">
+               AND document_number like concat('%',#{documentNumber},'%')
+            </if>
+            <if test="documentType != null and documentType != ''">
+               AND document_type=#{documentType}
+            </if>
+            <if test="uniqueIdentifier != null and uniqueIdentifier != ''">
+               AND unique_identifier like concat('%',#{uniqueIdentifier},'%')
+            </if>
+            <if test="productName != null and productName != ''">
+               AND product_name like concat('%',#{productName},'%')
+            </if>
+            <if test="InAndOut != null">
+                AND InAndOut=#{InAndOut}
+            </if>
+            <if test="implement != null">
+                AND implement=#{implement}
+            </if>
+        </where>
+        limit #{pageNo},8
+    </select>
+
+
+    <update id="update">
+        UPDATE erp.t_warehousing
+        <trim prefix="set" suffixOverrides=",">
+            <if test="remarks != null">
+                remarks=#{remarks},
+            </if>
+            <if test="implement != null">
+                implement=#{implement}
+            </if>
+        </trim>
+        where document_number=#{documentNumber}
+    </update>
+
+    <update id="Execute">
+        UPDATE erp.t_warehousing SET implement=#{implement}
+        WHERE document_number=#{documentNumber}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM erp.t_warehousing WHERE
+        <foreach collection="list" item="documentNumber" separator="or">
+             document_number=#{documentNumber}
+        </foreach>
+    </delete>
+</mapper>

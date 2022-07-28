@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace=绑定一个对应的Dao或Mapper接口-->
+<mapper namespace="com.zhang.rep.mapper.UserMapper">
+    <resultMap id="UserEntityMap" type="com.zhang.rep.entity.User">
+        <!--将表的资源类和类的属性不一致的字段进行匹配指定，名称一致可以不写-->
+        <!--
+            column:表示资源中的名称
+            property:类中的属性
+        -->
+        <result column="is_delete" property="isDelete"/>
+        <result column="is_manager" property="isManager"/>
+    </resultMap>
+<!--    id属性：表示映射的接口中的方法名称，直接在标签的内容部分来编写sql语句-->
+<!--
+        useGeneratedKeys属性，表示开启某个字段的值自增
+        keyProperty属性： 哪个字段进行自增
+        -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="uid">
+        INSERT INTO erp.t_user (
+            username, password,salt,phone,email,
+            gender,avatar,is_delete,is_manager
+        ) VALUE (
+            #{username}, #{password},#{salt},#{phone},#{email},
+            #{gender},#{avatar},#{isDelete},#{isManager}
+            )
+    </insert>
+
+    <select id="findByUsername" resultMap="UserEntityMap">
+        SELECT * FROM erp.t_user WHERE username = #{username}
+    </select>
+
+    <update id="updatePasswordByUid">
+        UPDATE erp.t_user SET
+            password=#{password}
+            where uid=#{uid}
+    </update>
+
+    <select id="findByUid" resultMap="UserEntityMap">
+        SELECT * FROM erp.t_user WHERE uid=#{uid}
+    </select>
+
+    <update id="updateInfoByUid">
+        UPDATE erp.t_user
+        SET
+            <if test="phone != null">phone=#{phone},</if>
+            <if test="email != null">email=#{email},</if>
+            <if test="gender!= null">gender=#{gender}</if>
+        WHERE uid=#{uid}
+    </update>
+
+    <update id="updateAvatarByUid">
+        UPDATE erp.t_user
+        SET
+            avatar=#{avatar}
+        WHERE uid=#{uid}
+    </update>
+
+</mapper>

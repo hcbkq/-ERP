@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhang.rep.mapper.ProductMapper">
+    <resultMap id="ProductEntityMap" type="com.zhang.rep.entity.Product">
+        <result column="pid" property="pid"/>
+        <result column="product_id" property="productId"/>
+        <result column="avatar" property="avatar"/>
+        <result column="product_name" property="productName"/>
+        <result column="product_type" property="productType"/>
+        <result column="company" property="company"/>
+        <result column="working_procedure" property="workingProcedure"/>
+        <result column="lowest_selling" property="lowestSelling"/>
+        <result column="recent_purchase" property="recentPurchase"/>
+        <result column="recent_bid" property="recentBid"/>
+        <result column="specify_cost" property="specifyCost"/>
+        <result column="specify_sales" property="specifySales"/>
+
+        <result column="minimum_stock" property="minimumStock"/>
+        <result column="maximum_stock" property="maximumStock"/>
+
+        <result column="raw_material" property="rawMaterial"/>
+        <result column="remarks" property="remarks"/>
+        <result column="halt_the_sales" property="haltTheSales"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="modified_user" property="modifiedUser"/>
+        <result column="modified_time" property="modifiedTime"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="pid">
+        INSERT INTO erp.t_product(product_id, avatar, product_name, product_type,
+                                  company, working_procedure,
+                                  lowest_selling, recent_purchase, recent_bid, specify_cost,
+                                  specify_sales, minimum_stock, maximum_stock, raw_material, remarks, halt_the_sales, created_user, created_time, modified_user, modified_time)
+                                  VALUES (
+                                          #{productId},#{avatar},#{productName},#{productType},
+                                          #{company},#{workingProcedure},
+                                          #{lowestSelling},#{recentPurchase},#{recentBid},#{specifyCost},
+                                          #{specifySales},#{minimumStock},#{maximumStock},
+                                          #{rawMaterial},#{remarks},#{haltTheSales},
+                                          #{createdUser},#{createdTime},#{modifiedUser},#{modifiedTime}
+                                         )
+    </insert>
+
+    <select id="calProductCount" resultType="java.lang.Integer">
+        SELECT COUNT(`pid`) FROM erp.t_product
+    </select>
+
+    <select id="select" resultMap="ProductEntityMap">
+        SELECT * FROM erp.t_product
+        <where>
+            <if test="pid != null and pid != ''">
+                AND pid=#{pid}
+            </if>
+            <if test="productId != null and productId != ''">
+                AND product_id like concat(#{productId},'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                AND product_name like concat('%',#{productName},'%')
+            </if>
+            <if test="workingProcedure != null and workingProcedure != ''">
+                AND working_procedure=#{workingProcedure}
+            </if>
+            <if test="haltTheSales != null">
+                AND halt_the_sales=#{haltTheSales}
+            </if>
+        </where>
+        limit #{pageNo},8
+    </select>
+
+    <select id="fidByProduct" resultMap="ProductEntityMap">
+        SELECT * FROM erp.t_product WHERE product_name=#{productName}
+    </select>
+
+    <update id="update">
+        UPDATE erp.t_product
+        <trim prefix="set" suffixOverrides=",">
+            <if test="avatar != null">
+                avatar=#{avatar},
+            </if>
+            <if test="productName != null">
+                product_name=#{productName},
+            </if>
+            <if test="productType != null">
+                product_type=#{productType},
+            </if>
+            <if test="company != null">
+                company=#{company},
+            </if>
+            <if test="workingProcedure != null">
+                working_procedure=#{workingProcedure},
+            </if>
+            <if test="lowestSelling != null">
+                lowest_selling=#{lowestSelling},
+            </if>
+            <if test="recentPurchase != null">
+                recent_purchase=#{recentPurchase},
+            </if>
+            <if test="recentBid != null">
+                specify_cost=#{specifyCost},
+            </if>
+            <if test="specifySales != null">
+                specify_sales=#{specifySales},
+            </if>
+
+            <if test="minimumStock != null">
+                minimum_stock=#{minimumStock},
+            </if>
+            <if test="maximumStock != null">
+                maximum_stock=#{maximumStock},
+            </if>
+
+            <if test="rawMaterial != null">
+                raw_material=#{rawMaterial},
+            </if>
+            <if test="remarks != null">
+                remarks=#{remarks},
+            </if>
+            <if test="haltTheSales != null">
+                halt_the_sales=#{haltTheSales},
+            </if>
+            <if test="modifiedUser != null">
+                modified_user=#{modifiedUser},
+            </if>
+            <if test="modifiedTime != null">
+                modifiedTime=#{modifiedTime}
+            </if>
+        </trim>
+        WHERE product_id=#{productId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM erp.t_product WHERE
+        <foreach collection="list" item="productId" separator="or">
+            product_id=#{productId}
+        </foreach>
+    </delete>
+</mapper>

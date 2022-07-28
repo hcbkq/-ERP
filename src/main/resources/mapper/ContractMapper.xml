@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace=绑定一个对应的Dao或Mapper接口-->
+<mapper namespace="com.zhang.rep.mapper.ContractMapper">
+    <resultMap id="ContractEntityMap" type="com.zhang.rep.entity.Contract">
+        <result column="hid" property="hid"/>
+        <result column="customer_cid" property="customerCid"/>
+        <result column="customer_username" property="customerUsername"/>
+        <result column="order_oid" property="orderOid"/>
+        <result column="order_product" property="orderProduct"/>
+        <result column="amount_money" property="amountMoney"/>
+        <result column="first_money" property="firstMoney"/>
+        <result column="middle_money" property="middleMoney"/>
+        <result column="balance_money" property="balanceMoney"/>
+        <result column="my_liquidated_damages" property="myLiquidatedDamages"/>
+        <result column="customer_liquidated_damages" property="customerLiquidatedDamages"/>
+        <result column="order_completion" property="orderCompletion"/>
+        <result column="reviewer" property="reviewer"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="modified_user" property="modifiedUser"/>
+        <result column="modified_time" property="modifiedTime"/>
+    </resultMap>
+
+    <insert id="insertNewContract" useGeneratedKeys="true" keyProperty="hid">
+        INSERT INTO erp.t_contract(
+            customer_cid,customer_username,order_oid,order_product,amount_money
+            ,first_money,middle_money,balance_money,my_liquidated_damages
+            ,customer_liquidated_damages,order_completion,reviewer
+            ,created_user,created_time,modified_user,modified_time
+        ) VALUE (
+            #{customerCid},#{customerUsername},#{orderOid},#{orderProduct},#{amountMoney}
+                ,#{firstMoney},#{middleMoney},#{balanceMoney},#{myLiquidatedDamages}
+                ,#{customerLiquidatedDamages},#{orderCompletion},#{reviewer}
+                ,#{createdUser},#{createdTime},#{modifiedUser},#{modifiedTime}
+            )
+    </insert>
+
+    <update id="updateContract">
+        UPDATE erp.t_contract SET
+            amount_money=#{amountMoney}
+            ,first_money=#{firstMoney}
+            ,middle_money=#{middleMoney}
+            ,balance_money=#{balanceMoney}
+            ,my_liquidated_damages=#{myLiquidatedDamages}
+            ,customer_liquidated_damages=#{customerLiquidatedDamages}
+            ,modified_user=#{modifiedUser}
+            ,modified_time=#{modifiedTime}
+        WHERE order_oid=#{orderOid}
+    </update>
+
+    <update id="updateOrderCompletion">
+        UPDATE erp.t_contract SET
+            order_completion=#{orderCompletion}
+            ,reviewer=#{reviewer}
+        WHERE order_oid=#{orderOid}
+    </update>
+
+    <select id="getContract" resultMap="ContractEntityMap">
+        SELECT * FROM erp.t_contract
+        <where>
+            <if test="customerCid != null">
+              AND customer_cid like concat(#{customerCid},'%')
+            </if>
+            <if test="customerUsername != null">
+              AND customer_username like concat('%',#{customerUsername},'%')
+            </if>
+            <if test="orderOid != null">
+              AND order_oid like concat(#{orderOid},'%')
+            </if>
+            <if test="orderCompletion != null">
+                order_completion=#{orderCompletion}
+            </if>
+            <if test="reviewer != null">
+                reviewer like concat('%',#{reviewer},'%')
+            </if>
+        </where>
+        limit #{pageNo},8
+    </select>
+
+    <select id="getContracts" resultMap="ContractEntityMap">
+        SELECT * FROM erp.t_contract
+    </select>
+</mapper>

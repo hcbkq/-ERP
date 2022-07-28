@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.zhang.rep.mapper.AccountMapper">
+    <resultMap id="AccountEntityMap" type="com.zhang.rep.entity.Account">
+        <result column="aid" property="aid"/>
+        <result column="account_name" property="accountName"/>
+        <result column="account_number" property="accountNumber"/>
+        <result column="bank_of_deposit" property="bankOfDeposit"/>
+        <result column="initial_amount" property="initialAmount"/>
+        <result column="existing_balance" property="existingBalance"/>
+        <result column="remarks" property="remarks"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+    </resultMap>
+
+    <insert id="insert" keyProperty="aid" useGeneratedKeys="true">
+       INSERT INTO erp.t_account(account_name, account_number, bank_of_deposit,
+                                 existing_balance, remarks,
+                                 created_user, created_time) VALUE (
+           #{accountName},#{accountNumber},#{bankOfDeposit}
+           ,#{existing_balance},#{remarks},#{createdUser},#{createdTime}
+           )
+    </insert>
+
+
+    <select id="select" resultMap="AccountEntityMap">
+        SELECT * FROM erp.t_account
+        <where>
+            <if test="aid != null">
+                AND aid=#{aid}
+            </if>
+            <if test="AccountName != null">
+                AND account_name like concat('%',#{accountName},'%')
+            </if>
+            <if test="accountNumber != null">
+                AND account_number like concat(#{accountNumber},'%')
+            </if>
+            <if test="bankOfDeposit != null">
+                AND bank_of_deposit like concat(#{bankOfDeposit},'%')
+            </if>
+        </where>
+    </select>
+
+    <update id="update">
+        UPDATE erp.t_account
+        SET remarks=#{remarks}
+        WHERE aid=#{aid}
+    </update>
+
+   <delete id="delete">
+       DELETE FROM erp.t_account WHERE aid=#{aid}
+   </delete>
+
+    <update id="existing">
+        UPDATE erp.t_account
+        SET existing_balance=#{existingBalance}
+        WHERE aid=#{aid}
+    </update>
+
+    <select id="findAccount" resultMap="AccountEntityMap">
+        SELECT * FROM erp.t_account WHERE account_number=#{accountNumber}
+    </select>
+
+</mapper>

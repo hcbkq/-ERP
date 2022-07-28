@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhang.rep.mapper.MaterialMapper">
+    <resultMap id="MaterialEntityMap" type="com.zhang.rep.entity.Material">
+        <result column="id" property="id"/>
+        <result column="mid" property="mid"/>
+        <result column="label" property="label"/>
+        <result column="name" property="name"/>
+        <result column="unit" property="unit"/>
+        <result column="purchase" property="purchase"/>
+        <result column="material_status" property="materialStatus"/>
+        <result column="storage_temperature" property="storageTemperature"/>
+        <result column="storage_mode" property="storageMode"/>
+        <result column="if_flammable" property="ifFlammable"/>
+        <result column="if_poisonous" property="ifPoisonous"/>
+        <result column="remarks" property="remarks"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="modified_user" property="modifiedUser"/>
+        <result column="modified_time" property="modifiedTime"/>
+    </resultMap>
+
+    <insert id="insertMaterial"  keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO erp.t_material(
+                 mid, label, name, unit, purchase,
+                 material_status, storage_temperature,
+                 storage_mode, if_flammable, if_poisonous,
+                 remarks, created_user, created_time,
+                 modified_user, modified_time
+        ) VALUE (
+            #{mid},#{label},#{name},#{unit},#{purchase},
+            #{materialStatus},#{storageTemperature},
+            #{storageMode},#{ifFlammable},#{ifPoisonous},
+            #{remarks},#{createdUser},#{createdTime},
+            #{modifiedUser},#{modifiedTime}
+            )
+    </insert>
+
+    <select id="getMaterials" resultMap="MaterialEntityMap">
+        SELECT * FROM erp.t_material
+        <where>
+            <if test="mid != null and mid != ''">
+                AND mid like concat(#{mid},'%')
+            </if>
+            <if test="label != null and label != ''">
+                AND `label` like concat(#{label},'%')
+            </if>
+            <if test="name != null and name  != ''">
+                AND `name` like concat('%',#{name},'%')
+            </if>
+        </where>
+        limit #{pageNo},8
+    </select>
+    
+    <update id="updateMaterial">
+        UPDATE erp.t_material
+        <trim prefix="set" suffixOverrides=",">
+            <if test="materialStatus != null">
+                 material_status=#{materialStatus},
+            </if>
+            <if test="storageTemperature != null">
+                storage_temperature=#{storageTemperature},
+            </if>
+            <if test="storageMode !=null">
+                storage_mode=#{storageMode},
+            </if>
+            <if test="ifFlammable != null">
+                if_flammable=#{ifFlammable},
+            </if>
+            <if test="ifPoisonous != null">
+                if_poisonous=#{ifPoisonous},
+            </if>
+            <if test="modifiedUser != null">
+                modified_user=#{modifiedUser},
+            </if>
+            <if test="modifiedTime != null">
+                modifiedTime=#{modifiedTime}
+            </if>
+        </trim>
+        WHERE mid=#{mid}
+    </update>
+
+    <select id="selectMaterial" resultType="java.lang.Integer">
+        SELECT count(*) FROM erp.t_material
+        WHERE label = #{label}
+    </select>
+    
+    <delete id="deleteMaterial">
+        DELETE FROM erp.t_material WHERE
+        <foreach collection="list" item="mid" separator="or">
+            mid=#{mid}
+        </foreach>
+    </delete>
+</mapper>

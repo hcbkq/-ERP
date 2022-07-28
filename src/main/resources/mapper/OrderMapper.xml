@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace=绑定一个对应的Dao或Mapper接口-->
+<mapper namespace="com.zhang.rep.mapper.OrderMapper">
+    <resultMap id="OrderEntityMap" type="com.zhang.rep.entity.Order">
+        <result column="oid" property="oid"/>
+        <result column="cid" property="cid"/>
+        <result column="identifier_id" property="identifierId"/>
+        <result column="order_product" property="orderProduct"/>
+        <result column="order_date" property="orderDate"/>
+        <result column="delivery_date" property="deliveryDate"/>
+        <result column="order_customer" property="orderCustomer"/>
+        <result column="order_quantity" property="orderQuantity"/>
+        <result column="money" property="money"/>
+        <result column="reviewer" property="reviewer"/>
+        <result column="statement" property="statement"/>
+        <result column="notes_documents" property="notesDocuments"/>
+    </resultMap>
+
+    <select id="getByOrders" resultMap="OrderEntityMap">
+        SELECT *
+        FROM erp.t_order
+    </select>
+
+    <insert id="insert" keyProperty="oid" useGeneratedKeys="true">
+        INSERT INTO erp.t_order(cid, identifier_id, order_product, order_date, delivery_date, order_customer,
+                                order_quantity, money, reviewer, statement, notes_documents) VALUE(
+                                    #{cid},#{identifierId},#{orderProduct},#{orderDate},#{deliveryDate},#{orderCustomer},
+                                    #{orderQuantity},#{money},#{reviewer},#{statement},#{notesDocuments}
+            )
+    </insert>
+
+    <select id="calOrderCount" resultType="java.lang.Integer">
+        SELECT COUNT(`oid`) FROM erp.t_order
+    </select>
+
+    <select id="countByCid" resultType="java.lang.Integer">
+        SELECT count(*) FROM erp.t_order where cid=#{cid}
+    </select>
+
+    <select id="findByCid" resultMap="OrderEntityMap">
+        SELECT * FROM erp.t_order WHERE cid=#{cid}
+    </select>
+
+    <delete id="deleteOrder">
+        DELETE FROM erp.t_order WHERE identifier_id=#{identifierId}
+    </delete>
+
+    <update id="updateNotesDocuments">
+        UPDATE erp.t_order
+        SET
+           notes_documents=#{notesDocuments}
+        WHERE identifier_id=#{identifierId}
+    </update>
+
+    <select id="findByIdentifierId" resultMap="OrderEntityMap">
+        SELECT * FROM erp.t_order WHERE identifier_id=#{identifierId}
+    </select>
+
+    <select id="findByOrders" resultMap="OrderEntityMap">
+        SELECT * FROM erp.t_order
+        <where>
+            <if test="cid != null and cid != ''">
+                AND cid=#{cid}
+            </if>
+            <if test="identifierId != null and identifierId != ''">
+                AND identifier_id like concat(#{identifierId},'%')
+            </if>
+            <if test="startOrderDate != null and startOrderDate != ''">
+                <![CDATA[   and DATE_FORMAT(order_date, '%Y-%m-%d')>=  DATE_FORMAT(#{startOrderDate}, '%Y-%m-%d')   ]]>
+            </if>
+            <if test="endOrderDate != null">
+                <![CDATA[  and DATE_FORMAT(order_date, '%Y-%m-%d') <= DATE_FORMAT(#{endOrderDate}, '%Y-%m-%d')    ]]>
+            </if>
+            <if test="startDeliveryDate != null">
+                <![CDATA[   and DATE_FORMAT(delivery_date, '%Y-%m-%d')>=  DATE_FORMAT(#{startDeliveryDate}, '%Y-%m-%d')   ]]>
+            </if>
+            <if test="endDeliveryDate != null">
+                <![CDATA[  and DATE_FORMAT(delivery_date, '%Y-%m-%d') <= DATE_FORMAT(#{endDeliveryDate}, '%Y-%m-%d')    ]]>
+            </if>
+            <if test="orderCustomer != null and orderCustomer != ''">
+                AND order_customer like concat('%',#{orderCustomer},'%')
+            </if>
+            <if test="reviewer != null and reviewer != ''">
+                AND reviewer like concat('%',#{reviewer},'%')
+            </if>
+        </where>
+        limit #{pageNo},8
+    </select>
+
+    <update id="updateStatement">
+        UPDATE erp.t_order
+        SET
+            delivery_date=CURRENT_DATE(),
+            statement=#{statement},
+            reviewer=#{reviewer}
+        WHERE identifier_id=#{identifierId}
+    </update>
+
+    <select id="monthly" resultType="java.lang.Integer">
+        SELECT count(*) FROM erp.t_order
+        WHERE
+              DATE_FORMAT(`order_date`,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m')
+        AND statement=0
+    </select>
+    
+    <select id="toDay" resultType="java.lang.Integer">
+        select count(*) from erp.t_order
+        where
+              to_days(`order_date`) = to_days(now());
+    </select>
+
+    <select id="NoCompletion" resultType="java.lang.Integer">
+        select count(*) from erp.t_order
+        where statement=0;
+    </select>
+    
+    <select id="Review" resultType="java.lang.Integer">
+        select count(*) from erp.t_order
+        where reviewer IS NULL and reviewer = ''
+    </select>
+    
+    <select id="monthOrder" resultType="map">
+        SELECT count(*) AS orderNumber FROM `erp`.t_order
+        where t_order.order_date>DATE_SUB(CURDATE(), INTERVAL 6 MONTH) GROUP BY MONTH(order_date)
+    </select>
+</mapper>
