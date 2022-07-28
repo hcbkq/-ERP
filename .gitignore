@@ -3,6 +3,7 @@
 .log
 .lock
 
+
 # Package Files #
 *.jar
 *.war
@@ -44,4 +45,3 @@ build/
 
 ### VS Code ###
 .vscode/
-/Vue/
