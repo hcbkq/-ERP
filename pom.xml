@@ -11,7 +11,7 @@
     <groupId>com.zhang</groupId>
     <artifactId>rep</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>rep</name>
+    <name>erp</name>
     <description>rep</description>
     <properties>
         <java.version>1.8</java.version>
