@@ -3,6 +3,7 @@
 .log
 .lock
 
+src/test
 
 # Package Files #
 *.jar
